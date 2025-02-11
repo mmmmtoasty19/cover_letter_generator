@@ -130,3 +130,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Don't send any vscode files to git
+.vscode
