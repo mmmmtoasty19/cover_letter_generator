@@ -133,5 +133,9 @@ dist
 # Don't send any vscode files to git
 .vscode
 
-
+# Don't save environmental variables
 .env
+
+# Don't save job description generate the file on each computer
+
+job_description.txt
