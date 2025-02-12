@@ -1,12 +1,15 @@
 const promises = require('fs/promises');
 const pdf = require('pdf-parse');
 const Anthropic = require('@anthropic-ai/sdk');
+const { Document, Packer, Paragraph, TextRun } = require('docx');
+const fs = require('fs');
+
 require('dotenv').config();
 
 const today = new Date();
 let jobDescription = '';
+let coverLetterRawText = '';
 
-console.log(today);
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
@@ -38,6 +41,73 @@ async function readJobDescription(filePath) {
 }
 
 
+function generateCoverLetter(rawText, outputFilename) {
+  // Parse the raw markup
+  const header = rawText.match(/<header>(.*?)<\/header>/s)[1].trim();
+  const greeting = rawText.match(/<greeting>(.*?)<\/greeting>/s)[1].trim();
+  const introduction = rawText.match(/<introduction>(.*?)<\/introduction>/s)[1].trim();
+  const body = rawText.match(/<body>(.*?)<\/body>/s)[1].trim();
+  const conclusion = rawText.match(/<conclusion>(.*?)<\/conclusion>/s)[1].trim();
+  const signature = rawText.match(/<signature>(.*?)<\/signature>/s)[1].trim();
+
+  // Create a new document using docx
+  const doc = new Document({
+    sections: [
+      {
+        properties: {},
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun(header),
+              new TextRun("\n\n"), // Add line breaks between sections
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(greeting),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(introduction),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(body),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(conclusion),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(signature),
+              new TextRun("\n\n"),
+            ],
+          }),
+        ],
+      },
+    ],
+  });
+
+  // Create a packer to generate the .docx file
+  Packer.toBuffer(doc).then((buffer) => {
+    // Save the document as a .docx file
+    fs.writeFileSync(outputFilename, buffer);
+    console.log(`${outputFilename} created successfully!`);
+  }).catch(error => {
+    console.error("Error generating the document:", error);
+  });
+}
+
+
 
 async function main() {
   try {
@@ -61,7 +131,12 @@ async function main() {
 
     const cover_letter_response = await anthropic.messages.create(cover_letter_api);
 
-    console.log(cover_letter_response)
+    coverLetterRawText = cover_letter_response.content[0].text.split('<cover_letter>')[1].split('</cover_letter>')[0].trim()
+    // console.log(coverLetterRawText)
+
+    generateCoverLetter(coverLetterRawText, 'test.docx')
+
+
    
 
 
@@ -71,6 +146,11 @@ async function main() {
     console.error(error.message); // Catches and logs any errors that occurred
   }
 }
+
+
+
+
+
 
 readJobDescription('./data/job_description.txt')
 // Call the main function
