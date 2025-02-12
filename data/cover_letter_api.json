@@ -1,0 +1,25 @@
+{
+  "model": "claude-3-5-sonnet-20241022",
+  "max_tokens": 5000,
+  "temperature": 1,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "You are an expert in job hunting and cover letter writing. Your task is to create a persuasive and professional cover letter for a job candidate based on their resume, the job description, and the current date. \n\nHere is the job description:\n<job_description>\n{{job_description}}\n</job_description>\n\nHere is the candidate's resume in JSON format:\n<resume_json>\n{{resume_json}}\n</resume_json>\n\nThe current date is:\n<date>\n{{date}}\n</date>\n\nPlease follow these steps to create an effective cover letter:\n\n1. Analyze the resume and job description to identify key skills and experiences that match the job requirements.\n2. Determine the most persuasive points to highlight in the cover letter.\n3. Structure the cover letter with an introduction, body paragraphs, and a conclusion.\n4. Ensure the letter is professional, engaging, and tailored to the specific job and company.\n\nBefore writing the cover letter, wrap your analysis inside <analysis> tags. In this analysis:\n1. Extract and list key skills and experiences from the resume.\n2. Identify the most important requirements from the job description.\n3. Brainstorm specific examples or achievements that match the job requirements.\n4. Create a brief outline of the cover letter structure.\n\nAfter your analysis, write the cover letter using the following structure:\n\n<cover_letter>\n<header>\n[Candidate's Name]\n[Candidate's Address]\n[City, State ZIP Code]\n[Phone Number]\n[Email Address]\n\n[Date]\n\n[Employer's Name]\n[Company Name]\n[Company Address]\n[City, State ZIP Code]\n</header>\n\n<greeting>\n[Greeting]\n</greeting>\n\n<introduction>\n[Opening paragraph]\n</introduction>\n\n<body>\n[Main paragraphs highlighting relevant skills and experiences]\n</body>\n\n<conclusion>\n[Closing paragraph]\n</conclusion>\n\n<signature>\n[Signature line]\n</signature>\n</cover_letter>\n\nRemember to be persuasive, professional, and to tailor the content specifically to the job description and the candidate's qualifications."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "<analysis>"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "model": "claude-3-5-sonnet-20241022",
+  "max_tokens": 5000,
+  "temperature": 1,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "You are an advanced resume parsing system designed to extract key information from resumes and organize it into a structured format. Your task is to analyze the following resume and create a JSON object containing the most relevant and insightful information.\n\nHere is the resume you need to parse:\n\n<resume>\n{{resume}}\n</resume>\n\nPlease follow these steps to complete the task:\n\n1. Carefully read through the entire resume.\n\n2. Extract the following information:\n   - First name\n   - Last name\n   - Location\n   - Work experience\n   - School experience\n   - Skills\n\n3. For each category, focus on the most insightful and relevant information.\n\n4. Organize the extracted information into a JSON object with the following keys:\n   - first_name\n   - last_name\n   - location\n   - work_experience\n   - school_experience\n   - skills\n\nBefore providing the final JSON output, break down the resume inside <resume_breakdown> tags:\n\n- Quote the relevant sections for first name, last name, and location.\n- For work experience, list out each entry with numbers, quoting relevant details for company, position, duration, and key responsibilities.\n- For school experience, list out each entry with numbers, quoting relevant details for institution, degree, field of study, and graduation year.\n- For skills, categorize them into technical and soft skills, listing each skill.\n- Double-check that all required fields in the JSON structure have corresponding information from the resume.\n\nThis breakdown will help ensure a thorough and accurate parsing of the resume.\n\nHere's an example of the expected JSON structure (note that this is just a structural example and does not contain actual data):\n\n```json\n{\n  \"first_name\": \"String\",\n  \"last_name\": \"String\",\n  \"location\": \"String\",\n  \"work_experience\": [\n    {\n      \"company\": \"String\",\n      \"position\": \"String\",\n      \"duration\": \"String\",\n      \"responsibilities\": [\"String\", \"String\"]\n    }\n  ],\n  \"school_experience\": [\n    {\n      \"institution\": \"String\",\n      \"degree\": \"String\",\n      \"field_of_study\": \"String\",\n      \"graduation_year\": \"Number\"\n    }\n  ],\n  \"skills\": [\"String\", \"String\", \"String\"]\n}\n```\n\nPlease ensure that your final JSON output follows this structure, but with actual data extracted from the provided resume."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "<resume_breakdown>"
+        }
+      ]
+    }
+  ]
+}
