@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.3",
+    "dotenv": "^16.4.7",
     "pdf-parse": "^1.1.1"
   },
   "name": "ai_cover_letter_generator",
