@@ -132,3 +132,6 @@ dist
 
 # Don't send any vscode files to git
 .vscode
+
+
+.env
