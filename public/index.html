@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Cover Letter Generator</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h1>Generate Your Cover Letter</h1>
+  <br>
+  <form id="uploadForm" enctype="multipart/form-data">
+      <label for="resume">Upload Resume (PDF):</label>
+      <input type="file" name="resume" accept=".pdf" required><br><br>
+
+      <label for="jobDescription">Paste Job Description:</label>
+      <textarea name="jobDescription" rows="6" cols="50" required></textarea><br><br>
+
+      <button type="submit" id="generateSub">Generate Cover Letter</button>
+  </form>
+
+  <!-- Hidden To Start With -->
+  <div id="outputSection">
+    <h2>Generated Cover Letter:</h2>
+    <textarea id="coverLetterOutput" rows="10" cols="60"></textarea><br><br>
+
+    <button id="downloadBtn" style="display: none;">Download as .docx</button>
+  </div>
+  <!-- End Hidden Section -->
+
+
+  <script src="script.js"></script> <!-- External JS file -->
+
+
+</body>
+</html>
