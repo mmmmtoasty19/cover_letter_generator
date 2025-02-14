@@ -11,10 +11,10 @@
   <br>
   <form id="uploadForm" enctype="multipart/form-data">
       <label for="resume">Upload Resume (pdf or docx):</label>
-      <input type="file" name="resume" accept=".txt,.pdf,.docx" required><br><br>
+      <input type="file" id="resume" name="resume" accept=".txt,.pdf,.docx" required><br><br>
 
       <label for="jobDescription">Paste Job Description:</label>
-      <textarea name="jobDescription" rows="6" cols="50" required></textarea><br><br>
+      <textarea id="jobDescription" name="jobDescription" rows="6" cols="50" required></textarea><br><br>
 
       <button type="submit" id="generateBtn">Generate Cover Letter</button>
   </form>
