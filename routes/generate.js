@@ -68,10 +68,15 @@ router.post('/download', async (req, res) => {
   try {
     const { coverLetterText } = req.body;
 
-    const outputFilename = path.join(__dirname, '../uploads/cover_letter.docx');
-    generateCoverLetter(coverLetterText, outputFilename);
+    // Generate .docx file dynamically
+    const docBuffer = await generateCoverLetter(coverLetterText);
 
-    res.json({downloadLink: '/uploads/cover_letter.docx'});
+    // Set response headers for file download
+    res.setHeader('Content-Disposition', 'attachment; filename="cover_letter.docx"');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+    res.send(docBuffer);
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error generating document' });
@@ -133,10 +138,7 @@ function generateCoverLetter(rawText, outputFilename) {
     ],
   });
 
-  Packer.toBuffer(doc).then((buffer) => {
-    fs.writeFileSync(outputFilename, buffer);
-    console.log(`Cover letter saved to ${outputFilename}`);
-  }).catch(error => console.error("Error generating document:", error));
+  return Packer.toBuffer(doc);
 }
 
 
