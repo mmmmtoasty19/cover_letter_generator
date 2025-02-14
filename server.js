@@ -13,8 +13,8 @@ app.use(express.json());
 
 
 // Routes
-// const generateRoute = require('./routes/generate');
-// app.use('/generate', generateRoute);
+const generateRoute = require('./routes/generate');
+app.use('/generate', generateRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
