@@ -43,7 +43,7 @@ router.post('/', upload.single('resume'), async (req, res) =>{
 
     // Send resume to LLM 
     const resumeResponse = await anthropic.messages.create(resume_parser_api);
-    const candiateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
+    const candidateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
 
     // Replace variables in cover letter API prompt
     cover_letter_api.messages[0].content[0].text = cover_letter_api.messages[0].content[0].text
@@ -61,3 +61,36 @@ router.post('/', upload.single('resume'), async (req, res) =>{
     res.status(500).json({ error: 'Error generating cover letter' });
   } 
 });
+
+router.post('/download', async (req, res) => {
+  try {
+    const { coverLetterText } = res.body;
+
+    const outputFilename = path.join(__dirname, '../uploads/cover_letter.docx');
+    generateCoverLetter(coverLetterText, outputFilename);
+
+    res.json({downloadLink: '/uploads/cover_letter.docx'});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error generating document' });
+  }
+});
+
+function generateCoverLetter(rawText, outputFilename) {
+  const doc = new Document({
+    sections: [
+      {
+        children: [new Paragraph({ children: [new TextRun(rawText)] })],
+      },
+    ],
+  });
+
+  Packer.toBuffer(doc).then((buffer) => {
+    fs.writeFileSync(outputFilename, buffer);
+    console.log(`Cover letter saved to ${outputFilename}`);
+  }).catch(error => console.error("Error generating document:", error));
+}
+
+
+
+module.exports = router;
