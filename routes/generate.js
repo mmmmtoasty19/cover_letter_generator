@@ -3,17 +3,13 @@ const express = require('express');
 const multer = require('multer');
 const pdf = require('pdf-parse');
 const { Document, Packer, Paragraph, TextRun } = require('docx');
-const fs = require('fs');
-const promises = require('fs/promises');
 const Anthropic = require('@anthropic-ai/sdk');
-const path = require('path');
-const { runInNewContext } = require('vm');
 
 // Load Environment Variables
 require('dotenv').config();
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/'});
+const upload = multer({ storage: multer.memoryStorage() });
 
 // initialize LLM
 //TODO Update to have User Provide their own key
@@ -25,8 +21,18 @@ const anthropic = new Anthropic({
 // Handle Resume upload and user input for Job Description
 router.post('/', upload.single('resume'), async (req, res) =>{
   try{
-    const resumePath = req.file.path;
+
+    if (!req.file || !req.body.jobDescription) {
+      return res.status(400).json({ error: 'Resume and Job Description are required' });
+    }
+
+    let resumeText = req.file.buffer.toString('utf-8');
     const jobDescription = req.body.jobDescription;
+
+    if (req.file.mimetype === 'application/pdf') {
+      const pdfData = await pdf(req.file.buffer);
+      resumeText = pdfData.text;
+    }
 
     // Load the LLM APi Messages
     // These include placeholders to be replaced later in function
@@ -34,12 +40,8 @@ router.post('/', upload.single('resume'), async (req, res) =>{
     const cover_letter_api = require('../data/cover_letter_api.json');
 
 
-    // Extract Data from PDF (includes text and meta data if needed for later development)
-    const resumeData = await promises.readFile(resumePath);
-    const extractedResumeText = await pdf(resumeData);
-
     // Replace placeholder in resume api with extracted text 
-    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace("{{resume}}", extractedResumeText.text);
+    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace("{{resume}}", resumeText);
 
     // Send resume to LLM 
     const resumeResponse = await anthropic.messages.create(resume_parser_api);
@@ -64,7 +66,7 @@ router.post('/', upload.single('resume'), async (req, res) =>{
 
 router.post('/download', async (req, res) => {
   try {
-    const { coverLetterText } = res.body;
+    const { coverLetterText } = req.body;
 
     const outputFilename = path.join(__dirname, '../uploads/cover_letter.docx');
     generateCoverLetter(coverLetterText, outputFilename);
@@ -77,10 +79,56 @@ router.post('/download', async (req, res) => {
 });
 
 function generateCoverLetter(rawText, outputFilename) {
+  const header = rawText.match(/<header>(.*?)<\/header>/s)[1].trim();
+  const greeting = rawText.match(/<greeting>(.*?)<\/greeting>/s)[1].trim();
+  const introduction = rawText.match(/<introduction>(.*?)<\/introduction>/s)[1].trim();
+  const body = rawText.match(/<body>(.*?)<\/body>/s)[1].trim();
+  const conclusion = rawText.match(/<conclusion>(.*?)<\/conclusion>/s)[1].trim();
+  const signature = rawText.match(/<signature>(.*?)<\/signature>/s)[1].trim();
+
+  // Create a new document using docx
   const doc = new Document({
     sections: [
       {
-        children: [new Paragraph({ children: [new TextRun(rawText)] })],
+        properties: {},
+        children: [
+          new Paragraph({
+            children: [
+              new TextRun(header),
+              new TextRun("\n\n"), // Add line breaks between sections
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(greeting),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(introduction),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(body),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(conclusion),
+              new TextRun("\n\n"),
+            ],
+          }),
+          new Paragraph({
+            children: [
+              new TextRun(signature),
+              new TextRun("\n\n"),
+            ],
+          }),
+        ],
       },
     ],
   });
