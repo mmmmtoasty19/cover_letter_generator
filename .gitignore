@@ -136,6 +136,11 @@ dist
 # Don't save environmental variables
 .env
 
-# Don't save job description generate the file on each computer
-
+# Don't save job description generate the file on each computer this was just used as an example
 job_description.txt
+
+
+# Don't commit the uploads folder it is temporary
+uploads/
+
+
