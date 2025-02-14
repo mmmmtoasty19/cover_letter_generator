@@ -40,3 +40,26 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
   }
 
 });
+
+document.getElementById('downloadBtn').addEventListener('click', async function() {
+  const coverLetterText = document.getElementById('coverLetterOutput').value;
+
+  try {
+    const response = await fetch('/generate/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coverLetterText })
+    });
+
+    const result = await response.json();
+    if (result.downloadLink) {
+      window.location.href = result.downloadLink;
+    } else {
+      alert('Error downloading document.')
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Failed to download document.')
+  }
+
+});
