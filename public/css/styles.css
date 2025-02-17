@@ -524,29 +524,15 @@
   .block {
     display: block;
   }
-  .flex {
-    display: flex;
-  }
-  .justify-center {
-    justify-content: center;
-  }
-  .text-center {
-    text-align: center;
-  }
-  .text-2xl {
-    font-size: var(--text-2xl);
-    line-height: var(--tw-leading, var(--text-2xl--line-height));
-  }
-  .font-bold {
-    --tw-font-weight: var(--font-weight-bold);
-    font-weight: var(--font-weight-bold);
-  }
   .outline {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
   }
 }
-#outputSection {
+#resumePreviewSection {
+  display: none;
+}
+#coverLetterSection {
   display: none;
 }
 @keyframes spin {
@@ -574,10 +560,6 @@
     transform: none;
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
-}
-@property --tw-font-weight {
-  syntax: "*";
-  inherits: false;
 }
 @property --tw-outline-style {
   syntax: "*";
