@@ -84,58 +84,26 @@ router.post('/download', async (req, res) => {
 });
 
 function generateCoverLetter(rawText, outputFilename) {
-  const header = rawText.match(/<header>(.*?)<\/header>/s)[1].trim();
-  const greeting = rawText.match(/<greeting>(.*?)<\/greeting>/s)[1].trim();
-  const introduction = rawText.match(/<introduction>(.*?)<\/introduction>/s)[1].trim();
-  const body = rawText.match(/<body>(.*?)<\/body>/s)[1].trim();
-  const conclusion = rawText.match(/<conclusion>(.*?)<\/conclusion>/s)[1].trim();
-  const signature = rawText.match(/<signature>(.*?)<\/signature>/s)[1].trim();
+  // Extract all sections in one go using an object
+  const sections = ['header', 'greeting', 'introduction', 'body', 'conclusion', 'signature']
+    .reduce((acc, section) => ({
+      ...acc,
+      [section]: rawText.match(new RegExp(`<${section}>(.*?)<\/${section}>`, 's'))[1].trim()
+    }), {});
 
-  // Create a new document using docx
+  // Create document with all sections
   const doc = new Document({
-    sections: [
-      {
-        properties: {},
-        children: [
-          new Paragraph({
-            children: [
-              new TextRun(header),
-              new TextRun("\n\n"), // Add line breaks between sections
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun(greeting),
-              new TextRun("\n\n"),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun(introduction),
-              new TextRun("\n\n"),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun(body),
-              new TextRun("\n\n"),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun(conclusion),
-              new TextRun("\n\n"),
-            ],
-          }),
-          new Paragraph({
-            children: [
-              new TextRun(signature),
-              new TextRun("\n\n"),
-            ],
-          }),
-        ],
-      },
-    ],
+    sections: [{
+      properties: {},
+      children: Object.values(sections).map(text => 
+        new Paragraph({
+          children: [
+            new TextRun(text),
+            new TextRun("\n\n")
+          ]
+        })
+      )
+    }]
   });
 
   return Packer.toBuffer(doc);
