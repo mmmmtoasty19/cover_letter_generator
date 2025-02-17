@@ -9,7 +9,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
 
   generateBtn.disabled = true;
   resumePreviewSection.value = "";  //This clear any previous generated output
-  resumePreviewSection.style.display = "block";
+  resumePreviewSection.style.display = "grid";
 
   const fileInput = document.getElementById('resume');
   const file = fileInput.files[0];
@@ -80,7 +80,7 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
           alert("Error: " + data.error);
       } else {
           document.getElementById("coverLetterOutput").innerText = data.coverLetter;
-          document.getElementById("coverLetterSection").style.display = "block"; // Show cover letter section
+          document.getElementById("coverLetterSection").style.display = "grid"; // Show cover letter section
           generateBtn.textContent = "Generate New Cover Letter"
       }
   } catch (error) {
