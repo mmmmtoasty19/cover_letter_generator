@@ -1,0 +1,12 @@
+/* These Styles will be converted by tailwind */
+
+
+@import "tailwindcss";
+
+#resumePreviewSection {
+  display: none;
+}
+
+#coverLetterSection {
+  display: none;
+}
