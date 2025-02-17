@@ -2,13 +2,14 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
   event.preventDefault();
 
   const resumePreviewSection = document.getElementById('resumePreviewSection');
+  const resumeTextPreview = document.getElementById("resumeTextOutput")
   const generateBtn = document.getElementById('generateCoverLetterBtn');
 
 
+
   generateBtn.disabled = true;
-  generateBtn.textContent = "Reading Resume...";
   resumePreviewSection.value = "";  //This clear any previous generated output
-  resumePreviewSection.style.display = "flex";
+  resumePreviewSection.style.display = "block";
 
   const fileInput = document.getElementById('resume');
   const file = fileInput.files[0];
@@ -31,21 +32,22 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
     if (data.error) {
       alert("Error: " + data.error)
     } else {
-      resumePreviewSection.value = data.extractedText;
+      resumeTextPreview.value = data.extractedText;
       generateBtn.disabled = false;
-      generateBtn.textContent = "Generate Cover Letter"
     }
   } catch (error) {
     console.error('Error:', error);
     alert('Something went wrong. Please try again.');
-    outputSection.style.display = "none";
+    resumePreviewSection.style.display = "none";
   }
 
 });
 
+// Send Resume and Job Description to Generate Cover Letter
 document.getElementById("generateCoverLetterBtn").addEventListener("click", async function () {
   const extractedResumeText = document.getElementById("resumeTextOutput").value;
   const jobDescription = document.getElementById("jobDescription").value;
+  const generateBtn = document.getElementById("generateCoverLetterBtn")
 
   if (!extractedResumeText.trim()) {
       alert("Please confirm the extracted resume text.");
@@ -62,6 +64,8 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
       jobDescription,
   };
 
+  generateBtn.textContent = "Generating Cover Letter...."
+
   try {
       const response = await fetch("/generate", {
           method: "POST",
@@ -75,6 +79,7 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
       } else {
           document.getElementById("coverLetterOutput").innerText = data.coverLetter;
           document.getElementById("coverLetterSection").style.display = "block"; // Show cover letter section
+          generateBtn.textContent = "Generate New Cover Letter"
       }
   } catch (error) {
       console.error("Error generating cover letter:", error);

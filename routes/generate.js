@@ -17,51 +17,46 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+// Extract resume text and return it for preview
+router.post('/extract-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const resumeBuffer = req.file.buffer;
+    const extractedResumeText = await pdf(resumeBuffer);
+    
+    res.json({ extractedText: extractedResumeText.text });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error extracting resume text' });
+  }
+});
 
 // Handle Resume upload and user input for Job Description
-router.post('/', upload.single('resume'), async (req, res) =>{
-  try{
+router.post('/', async (req, res) => {
+  try {
+    const { extractedResumeText, jobDescription } = req.body;
 
-    if (!req.file || !req.body.jobDescription) {
-      return res.status(400).json({ error: 'Resume and Job Description are required' });
-    }
-
-    let resumeText = req.file.buffer.toString('utf-8');
-    const jobDescription = req.body.jobDescription;
-
-    if (req.file.mimetype === 'application/pdf') {
-      const pdfData = await pdf(req.file.buffer);
-      resumeText = pdfData.text;
-    }
-
-    // Load the LLM APi Messages
-    // These include placeholders to be replaced later in function
     const resume_parser_api = require('../data/resume_parser_api.json');
     const cover_letter_api = require('../data/cover_letter_api.json');
 
+    // Replace placeholder in API call
+    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace("{{resume}}", extractedResumeText);
 
-    // Replace placeholder in resume api with extracted text 
-    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace("{{resume}}", resumeText);
-
-    // Send resume to LLM 
     const resumeResponse = await anthropic.messages.create(resume_parser_api);
     const candidateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
 
-    // Replace variables in cover letter API prompt
     cover_letter_api.messages[0].content[0].text = cover_letter_api.messages[0].content[0].text
       .replace('{{resume_json}}', candidateProfile)
       .replace('{{job_description}}', jobDescription)
       .replace('{{date}}', new Date().toDateString());
-  
-    //Send data to LLM to generate Cover Letter
+
     const coverLetterResponse = await anthropic.messages.create(cover_letter_api);
     const coverLetterRawText = coverLetterResponse.content[0].text.split('<cover_letter>')[1].split('</cover_letter>')[0].trim();
-  
+
     res.json({ coverLetter: coverLetterRawText });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error generating cover letter' });
-  } 
+  }
 });
 
 router.post('/download', async (req, res) => {
