@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
-#outputSection {
+#resumePreviewSection {
+  display: none;
+}
+
+#coverLetterSection {
   display: none;
 }

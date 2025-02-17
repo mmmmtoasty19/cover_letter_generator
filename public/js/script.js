@@ -1,69 +1,85 @@
 document.getElementById('uploadForm').addEventListener('submit', async function (event) {
   event.preventDefault();
 
-  const outputSection = document.getElementById('outputSection');
-  const coverLetterOutput = document.getElementById('coverLetterOutput');
-  const generateBtn = document.getElementById('generateBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
+  const resumePreviewSection = document.getElementById('resumePreviewSection');
+  const generateBtn = document.getElementById('generateCoverLetterBtn');
 
-  
+
   generateBtn.disabled = true;
-  generateBtn.textContent = "Generating...";
-  coverLetterOutput.value = "";  //This clear any previous generated output
-  
-  // Show the Output Section while the program runs
-  outputSection.style.display = "block";
-  coverLetterOutput.value = "Generating cover letter...";
-
+  generateBtn.textContent = "Reading Resume...";
+  resumePreviewSection.value = "";  //This clear any previous generated output
+  resumePreviewSection.style.display = "flex";
 
   const fileInput = document.getElementById('resume');
-  const jobDescriptionInput = document.getElementById('jobDescription');
-
-  if (!fileInput || !jobDescriptionInput) {
-    console.error("Form elements not found.");
-    return;
-  }
-
   const file = fileInput.files[0];
-  const jobDescription = jobDescriptionInput.value;
 
   if (!file) {
     alert("Please upload a resume.");
     return;
   }
 
-  if (!jobDescription.trim()) {
-    alert("Please enter a job description.");
-    return;
-  } 
-
   const formData = new FormData();
   formData.append("resume", file);
-  formData.append("jobDescription", jobDescription);
 
   try {
-    const response = await fetch('/generate', {
+    const response = await fetch('/generate/extract-resume', {
       method: "POST",
       body: formData,
   });
 
-    const result = await response.json();
-    if (result.coverLetter) {
-      coverLetterOutput.value = result.coverLetter;
-      downloadBtn.style.display = 'block';
+    const data = await response.json();
+    if (data.error) {
+      alert("Error: " + data.error)
     } else {
-      alert('Error Generating Cover Letter (Check Console for more details');
-      outputSection.style.display = 'none' // Hides the output on erros
+      resumePreviewSection.value = data.extractedText;
+      generateBtn.disabled = false;
+      generateBtn.textContent = "Generate Cover Letter"
     }
   } catch (error) {
     console.error('Error:', error);
     alert('Something went wrong. Please try again.');
     outputSection.style.display = "none";
-  } finally {
-    generateBtn.disabled = false;
-    generateBtn.textContent = 'Generate Cover Letter';
   }
 
+});
+
+document.getElementById("generateCoverLetterBtn").addEventListener("click", async function () {
+  const extractedResumeText = document.getElementById("resumeTextOutput").value;
+  const jobDescription = document.getElementById("jobDescription").value;
+
+  if (!extractedResumeText.trim()) {
+      alert("Please confirm the extracted resume text.");
+      return;
+  }
+
+  if (!jobDescription.trim()) {
+      alert("Please enter a job description.");
+      return;
+  }
+
+  const requestData = {
+      extractedResumeText,
+      jobDescription,
+  };
+
+  try {
+      const response = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestData),
+      });
+
+      const data = await response.json();
+      if (data.error) {
+          alert("Error: " + data.error);
+      } else {
+          document.getElementById("coverLetterOutput").innerText = data.coverLetter;
+          document.getElementById("coverLetterSection").style.display = "block"; // Show cover letter section
+      }
+  } catch (error) {
+      console.error("Error generating cover letter:", error);
+      alert("Something went wrong. Please try again.");
+  }
 });
 
 document.getElementById('downloadBtn').addEventListener('click', async function () {
