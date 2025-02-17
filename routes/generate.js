@@ -33,7 +33,7 @@ router.post('/extract-resume', upload.single('resume'), async (req, res) => {
 // Handle Resume upload and user input for Job Description
 router.post('/', async (req, res) => {
   try {
-    const { extractedResumeText, jobDescription } = req.body;
+    const { extractedResumeText, jobDescription, keyPoints } = req.body;
 
     const resume_parser_api = require('../data/resume_parser_api.json');
     const cover_letter_api = require('../data/cover_letter_api.json');
@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
     cover_letter_api.messages[0].content[0].text = cover_letter_api.messages[0].content[0].text
       .replace('{{resume_json}}', candidateProfile)
       .replace('{{job_description}}', jobDescription)
+      .replace('{{key_points}}', keyPoints )
       .replace('{{date}}', new Date().toDateString());
 
     const coverLetterResponse = await anthropic.messages.create(cover_letter_api);

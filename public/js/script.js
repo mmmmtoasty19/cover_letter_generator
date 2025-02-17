@@ -47,6 +47,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
 document.getElementById("generateCoverLetterBtn").addEventListener("click", async function () {
   const extractedResumeText = document.getElementById("resumeTextOutput").value;
   const jobDescription = document.getElementById("jobDescription").value;
+  const keyPoints = document.getElementById("keyPoints").value;
   const generateBtn = document.getElementById("generateCoverLetterBtn")
 
   if (!extractedResumeText.trim()) {
@@ -62,6 +63,7 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
   const requestData = {
       extractedResumeText,
       jobDescription,
+      keyPoints,
   };
 
   generateBtn.textContent = "Generating Cover Letter...."
