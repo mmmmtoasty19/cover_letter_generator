@@ -4,20 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Cover Letter Generator</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <!-- <link rel="stylesheet" href="css/styles.css"> -->
+   <!-- Used for Testing purposes only -->
+  <link rel="stylesheet" href="css/base_styles.css">
 </head>
 <body>
-  <h1>Generate Your Cover Letter</h1>
+  <h1 class="text-2xl text-center">Generate Your Cover Letter</h1>
   <br>
   <form id="uploadForm" enctype="multipart/form-data">
       <label for="resume">Upload Resume (pdf or docx):</label>
-      <input type="file" id="resume" name="resume" accept=".txt,.pdf,.docx" required><br><br>
+      <input type="file" id="resume" name="resume" accept=".pdf,.docx,.doc" required><br><br>
       <button type="submit" id="generateBtn">Read Resume</button>
   </form>
 
   <div id="resumePreviewSection">
-    <h3>Extracted Resume Text:</h3>
-    <textarea id="resumeTextOutput" rows="10"></textarea>
+    <h3>AI-Generated Candidate Profile:</h3>
+    <p>Displayed in JSON format.  Edit as needed.</p>
+    <textarea id="profileJson" rows="10"></textarea>
     <label for="jobDescription">Paste Job Description:</label>
     <textarea id="jobDescription" rows="5" required></textarea>
     <label for="keyPoints">Key Points for Letter (optional):</label>
@@ -28,7 +31,7 @@
   <!-- Hidden To Start With -->
   <div id="coverLetterSection">
     <h3>Generated Cover Letter:</h3>
-    <textarea id="coverLetterOutput" rows="10"></textarea>
+    <textarea id="coverLetterOutput" rows="15" cols="80"></textarea> 
     <button id="downloadBtn">Download as DOCX</button>  
   </div>
   <!-- End Hidden Section -->

@@ -20,10 +20,38 @@ const anthropic = new Anthropic({
 // Extract resume text and return it for preview
 router.post('/extract-resume', upload.single('resume'), async (req, res) => {
   try {
-    const resumeBuffer = req.file.buffer;
-    const extractedResumeText = await pdf(resumeBuffer);
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    let extractedText = '';
+    const fileBuffer = req.file.buffer;
+    const fileType = req.file.mimetype;
+
+    if (fileType === 'application/pdf') {
+      const pdfData = await pdf(fileBuffer);
+      extractedText = pdfData.text;
+    } else if (
+      fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ) {
+      const result = await mammoth.extractRawText({ buffer: fileBuffer });
+      extractedText = result.value;
+    } else {
+      return res.status(400).json({ error: 'Unsupported file type' });
+    }
+    // Load Resume Parser API Prompt Template
+    const resume_parser_api = require('../data/resume_parser_api.json');
+
+    // Replace placeholder with extracted resume text
+    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace('{{resume}}', extractedText);
+
+    // Send the extracted resume text to AI model
+    const resumeResponse = await anthropic.messages.create(resume_parser_api);
     
-    res.json({ extractedText: extractedResumeText.text });
+    // Extract JSON-formatted profile from the response
+    const candidateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
+
+    res.json({candidateProfile: JSON.parse(candidateProfile) });
+   
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error extracting resume text' });
@@ -33,16 +61,9 @@ router.post('/extract-resume', upload.single('resume'), async (req, res) => {
 // Handle Resume upload and user input for Job Description
 router.post('/', async (req, res) => {
   try {
-    const { extractedResumeText, jobDescription, keyPoints } = req.body;
+    const { candidateProfile, jobDescription, keyPoints } = req.body;
 
-    const resume_parser_api = require('../data/resume_parser_api.json');
     const cover_letter_api = require('../data/cover_letter_api.json');
-
-    // Replace placeholder in API call
-    resume_parser_api.messages[0].content[0].text = resume_parser_api.messages[0].content[0].text.replace("{{resume}}", extractedResumeText);
-
-    const resumeResponse = await anthropic.messages.create(resume_parser_api);
-    const candidateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
 
     cover_letter_api.messages[0].content[0].text = cover_letter_api.messages[0].content[0].text
       .replace('{{resume_json}}', candidateProfile)
@@ -79,27 +100,24 @@ router.post('/download', async (req, res) => {
   }
 });
 
-function generateCoverLetter(rawText, outputFilename) {
-  // Extract all sections in one go using an object
-  const sections = ['header', 'greeting', 'introduction', 'body', 'conclusion', 'signature']
-    .reduce((acc, section) => ({
-      ...acc,
-      [section]: rawText.match(new RegExp(`<${section}>(.*?)<\/${section}>`, 's'))[1].trim()
-    }), {});
+function generateCoverLetter(rawText) {
+  if (!rawText || typeof rawText !== "string") {
+    throw new Error("Invalid cover letter text provided.");
+  }
 
-  // Create document with all sections
+  // Convert text into paragraphs, splitting by double newlines
+  const paragraphs = rawText.split("\n\n").map(text => 
+    new Paragraph({
+      children: [
+        new TextRun(text),
+        new TextRun("\n") // Ensures spacing between paragraphs
+      ]
+    })
+  );
+
+  // Create the document
   const doc = new Document({
-    sections: [{
-      properties: {},
-      children: Object.values(sections).map(text => 
-        new Paragraph({
-          children: [
-            new TextRun(text),
-            new TextRun("\n\n")
-          ]
-        })
-      )
-    }]
+    sections: [{ properties: {}, children: paragraphs }]
   });
 
   return Packer.toBuffer(doc);

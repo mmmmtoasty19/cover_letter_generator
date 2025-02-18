@@ -2,14 +2,14 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
   event.preventDefault();
 
   const resumePreviewSection = document.getElementById('resumePreviewSection');
-  const resumeTextPreview = document.getElementById("resumeTextOutput")
   const generateBtn = document.getElementById('generateCoverLetterBtn');
+  const profileJson = document.getElementById('profileJson');
 
 
 
-  generateBtn.disabled = true;
-  resumePreviewSection.value = "";  //This clear any previous generated output
+  generateBtn.disabled = true;  
   resumePreviewSection.style.display = "grid";
+  profileJson.textContent = "Parsing Resume....."
 
   const fileInput = document.getElementById('resume');
   const file = fileInput.files[0];
@@ -28,13 +28,14 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
       body: formData,
   });
 
-    const data = await response.json();
-    if (data.error) {
-      alert("Error: " + data.error)
-    } else {
-      resumeTextPreview.value = data.extractedText;
-      generateBtn.disabled = false;
-    }
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to process the resume.');
+  }
+
+  const data = await response.json();
+  generateBtn.disabled = false;  
+  profileJson.textContent = JSON.stringify(data.candidateProfile, null, 2);
   } catch (error) {
     console.error('Error:', error);
     alert('Something went wrong. Please try again.');
@@ -45,12 +46,12 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
 
 // Send Resume and Job Description to Generate Cover Letter
 document.getElementById("generateCoverLetterBtn").addEventListener("click", async function () {
-  const extractedResumeText = document.getElementById("resumeTextOutput").value;
+  const candidateProfile = document.getElementById("profileJson").value;
   const jobDescription = document.getElementById("jobDescription").value;
   const keyPoints = document.getElementById("keyPoints").value;
   const generateBtn = document.getElementById("generateCoverLetterBtn")
 
-  if (!extractedResumeText.trim()) {
+  if (!candidateProfile.trim()) {
       alert("Please confirm the extracted resume text.");
       return;
   }
@@ -61,7 +62,7 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
   }
 
   const requestData = {
-      extractedResumeText,
+      candidateProfile,
       jobDescription,
       keyPoints,
   };
@@ -79,7 +80,8 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
       if (data.error) {
           alert("Error: " + data.error);
       } else {
-          document.getElementById("coverLetterOutput").innerText = data.coverLetter;
+          const formattedText = formatCoverLetter(data.coverLetter);
+          document.getElementById("coverLetterOutput").value = formattedText;
           document.getElementById("coverLetterSection").style.display = "grid"; // Show cover letter section
           generateBtn.textContent = "Generate New Cover Letter"
       }
@@ -120,3 +122,15 @@ document.getElementById('downloadBtn').addEventListener('click', async function 
       alert('Failed to download document.');
   }
 });
+
+
+function formatCoverLetter(rawText) {
+  return rawText
+    .replace(/<\/header>/g, '') 
+    .replace(/<\/greeting>/g, '') 
+    .replace(/<\/introduction>/g, '') 
+    .replace(/<\/body>/g, '') 
+    .replace(/<\/conclusion>/g, '') 
+    .replace(/<\/signature>/g, '') 
+    .replace(/<[^>]+>/g, ''); // Remove all XML-like tags
+}
