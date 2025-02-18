@@ -521,8 +521,15 @@
   .static {
     position: static;
   }
+  .block {
+    display: block;
+  }
   .grid {
     display: grid;
+  }
+  .border {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
   }
   .text-center {
     text-align: center;
@@ -572,6 +579,11 @@
     transform: none;
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
+}
+@property --tw-border-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
 }
 @property --tw-outline-style {
   syntax: "*";

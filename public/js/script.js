@@ -1,3 +1,24 @@
+const profileJsonTextarea = document.getElementById("profileJson");
+
+// Function to validate JSON input live
+function validateJsonInput() {
+  const errorText = document.getElementById("jsonError");
+
+  try {
+      // Try parsing JSON
+      // TODO Update these styles to be correct tailwind classes for constancy
+      JSON.parse(profileJsonTextarea.value);
+      profileJsonTextarea.style.border = "2px solid green"; // Green border on valid input
+      errorText.style.display = "none";
+  } catch (e) {
+      profileJsonTextarea.style.border = "2px solid red"; // Red border on error
+      errorText.style.display = "block";
+  }
+}
+
+profileJsonTextarea.addEventListener("input", validateJsonInput);
+
+
 document.getElementById('uploadForm').addEventListener('submit', async function (event) {
   event.preventDefault();
 
@@ -134,3 +155,5 @@ function formatCoverLetter(rawText) {
     .replace(/<\/signature>/g, '') 
     .replace(/<[^>]+>/g, ''); // Remove all XML-like tags
 }
+
+

@@ -18,9 +18,9 @@
   </form>
 
   <div id="resumePreviewSection">
-    <h3>AI-Generated Candidate Profile:</h3>
-    <p>Displayed in JSON format.  Edit as needed.</p>
-    <textarea id="profileJson" rows="10"></textarea>
+    <label for="profileJson">Candidate Profile (Editable JSON):</label>
+    <textarea id="profileJson" style="width: 100%; height: 200px; font-family: monospace;"></textarea>
+    <p id="jsonError" style="color: red; display: none;">Invalid JSON! Please correct it.</p>
     <label for="jobDescription">Paste Job Description:</label>
     <textarea id="jobDescription" rows="5" required></textarea>
     <label for="keyPoints">Key Points for Letter (optional):</label>
