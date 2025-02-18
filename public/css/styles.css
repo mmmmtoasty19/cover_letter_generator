@@ -521,8 +521,15 @@
   .static {
     position: static;
   }
-  .block {
-    display: block;
+  .grid {
+    display: grid;
+  }
+  .text-center {
+    text-align: center;
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
   .outline {
     outline-style: var(--tw-outline-style);
@@ -534,6 +541,11 @@
 }
 #coverLetterSection {
   display: none;
+}
+@layer base {
+  textarea {
+    resize: auto;
+  }
 }
 @keyframes spin {
   to {
