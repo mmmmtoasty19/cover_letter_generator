@@ -1,0 +1,25 @@
+{
+  "model": "claude-3-5-sonnet-20241022",
+  "max_tokens": 5000,
+  "temperature": 1,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "text",
+          "text": "You are an AI assistant specializing in resume tailoring. Your task is to customize a resume based on a specific job description, highlighting the most relevant experiences, skills, and qualifications for the given job.\n\nFirst, review the original resume provided in JSON format:\n\n<resume_json>\n{{RESUME_JSON}}\n</resume_json>\n\nNext, carefully read the job description:\n\n<job_description>\n{{JOB_DESCRIPTION}}\n</job_description>\n\nBefore tailoring the resume, analyze the job description and the original resume. Wrap your analysis inside <detailed_analysis> tags:\n\n1. Identify key requirements, skills, and qualifications from the job description.\n2. List keywords and phrases from the job description that should be incorporated into the resume.\n3. List relevant experiences, skills, and qualifications from the original resume that align with the job description.\n4. Evaluate the quantitative achievements in the resume and how they relate to the job requirements.\n5. Note any areas where the resume could be modified to better match the job requirements.\n6. Identify any potential gaps between the job requirements and the candidate's qualifications.\n\nNow, tailor the resume following these steps:\n\n1. Reorder work experiences to prioritize the most relevant roles.\n2. Adjust responsibility descriptions to emphasize relevant skills and achievements.\n3. Highlight education and certifications that are most applicable to the job.\n4. Reorder and potentially remove skills to focus on those most relevant to the position.\n5. Ensure that the tailored resume maintains the same structure as the original, including all main sections (personal information, work experience, education, and skills).\n6. If certain experiences or skills in the original resume are not directly relevant to the job description, omit them or reduce their emphasis.\n7. Do not invent or add any new information that is not present in the original resume.\n\nAfter tailoring the resume, provide the output in rich text format suitable for saving as a Word document or PDF. Use appropriate formatting such as bold, italics, bullet points, and headings to enhance readability. Present your output within <tailored_resume> tags.\n\nFollowing the tailored resume, provide a summary of key changes made to the original resume. Present this summary within <key_changes> tags.\n\nRemember to maintain accuracy and relevance while tailoring the resume to the specific job description."
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "<detailed_analysis>"
+        }
+      ]
+    }
+  ]
+}
