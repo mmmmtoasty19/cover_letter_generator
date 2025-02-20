@@ -48,7 +48,7 @@ router.post('/extract-resume', upload.single('resume'), async (req, res) => {
     const resumeResponse = await anthropic.messages.create(resume_parser_api);
     
     // Extract JSON-formatted profile from the response
-    const candidateProfile = resumeResponse.content[0].text.split('```json')[1].split('```')[0].trim();
+    const candidateProfile = resumeResponse.content[0].text.split('<json_output>')[1].split('</json_output>')[0].trim();
 
     res.json({candidateProfile: JSON.parse(candidateProfile) });
    
@@ -61,20 +61,34 @@ router.post('/extract-resume', upload.single('resume'), async (req, res) => {
 // Handle Resume upload and user input for Job Description
 router.post('/', async (req, res) => {
   try {
+    // Load Variables
     const { candidateProfile, jobDescription, keyPoints } = req.body;
+    const coverLetterAPI = require('../data/cover_letter_api.json');
+    const resumeTailoringAPI = require('../data/resume_tailoring_api.json');
 
-    const cover_letter_api = require('../data/cover_letter_api.json');
-
-    cover_letter_api.messages[0].content[0].text = cover_letter_api.messages[0].content[0].text
+    // Replace API placeholders
+    coverLetterAPI.messages[0].content[0].text = coverLetterAPI.messages[0].content[0].text
       .replace('{{resume_json}}', candidateProfile)
       .replace('{{job_description}}', jobDescription)
       .replace('{{key_points}}', keyPoints )
       .replace('{{date}}', new Date().toDateString());
 
-    const coverLetterResponse = await anthropic.messages.create(cover_letter_api);
-    const coverLetterRawText = coverLetterResponse.content[0].text.split('<cover_letter>')[1].split('</cover_letter>')[0].trim();
 
-    res.json({ coverLetter: coverLetterRawText });
+    resumeTailoringAPI.messages[0].content[0].text = resumeTailoringAPI.messages[0].content[0].text
+      .replace('{{resume_json}}', candidateProfile)
+      .replace('{{job_description}}', jobDescription)
+
+    // Send Messages to LLM
+    const coverLetterResponse = await anthropic.messages.create(coverLetterAPI);
+    const tailoredResumeResponse = await anthropic.messages.create(resumeTailoringAPI);
+
+    // Extract Relevant Responses
+    const coverLetterRawText = coverLetterResponse.content[0].text.split('<cover_letter>')[1].split('</cover_letter>')[0].trim();
+    const tailoredResumeText = tailoredResumeResponse.content[0].text.split('<tailored_resume>')[1].split('</tailored_resume>')[0].trim();
+    const resumeChanges = tailoredResumeResponse.content[0].text.split('<key_changes>')[1].split('</key_changes>')[0].trim();
+
+
+    res.json({ coverLetter: coverLetterRawText, tailoredResumeText, resumeChanges });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error generating cover letter' });

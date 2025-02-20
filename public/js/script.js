@@ -104,6 +104,9 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
           const formattedText = formatCoverLetter(data.coverLetter);
           document.getElementById("coverLetterOutput").value = formattedText;
           document.getElementById("coverLetterSection").style.display = "grid"; // Show cover letter section
+          document.getElementById("tailoredResumeSection").style.display = "grid";
+          document.getElementById("tailoredResumeOutput").value = data.tailoredResumeText;
+          document.getElementById("keyResumeUpdates").textContent = data.resumeChanges;
           generateBtn.textContent = "Generate New Cover Letter"
       }
   } catch (error) {

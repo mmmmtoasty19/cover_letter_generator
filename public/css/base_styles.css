@@ -11,8 +11,13 @@
   display: none;
 }
 
+#tailoredResumeSection {
+  display: none;
+}
+
 @layer base {
   textarea {
     resize: auto;
   }
 }
+
