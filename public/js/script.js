@@ -115,37 +115,88 @@ document.getElementById("generateCoverLetterBtn").addEventListener("click", asyn
   }
 });
 
-document.getElementById('downloadBtn').addEventListener('click', async function () {
-  const coverLetterText = document.getElementById('coverLetterOutput').value;
 
+async function downloadDocument(content, endpoint, filename) {
   try {
-      const response = await fetch('/generate/download', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ coverLetterText })
-      });
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+    });
 
-      if (!response.ok) throw new Error('Failed to download document.');
+    if (!response.ok) throw new Error('Failed to download document.');
 
-      // Convert response to blob
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+    // Convert response to blob
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
 
-      // Create a temporary download link
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'cover_letter.docx';
-      document.body.appendChild(a);
-      a.click();
+    // Create a temporary download link
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
 
-      // Cleanup
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+    // Cleanup
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   } catch (error) {
       console.error('Error:', error);
       alert('Failed to download document.');
   }
+}
+
+// Event listener for cover letter download
+document.getElementById('downloadCoverLetterBtn').addEventListener('click', function () {
+  const coverLetterText = document.getElementById('coverLetterOutput').value;
+  if (!coverLetterText.trim()) {
+      alert("Cover letter is empty!");
+      return;
+  }
+  downloadDocument(coverLetterText, '/generate/download-cover-letter', 'cover_letter.docx');
 });
+
+// Event listener for tailored resume download
+document.getElementById('downloadResumeBtn').addEventListener('click', function () {
+  const tailoredResumeText = document.getElementById('tailoredResumeOutput').value;
+  if (!tailoredResumeText.trim()) {
+      alert("Tailored resume is empty!");
+      return;
+  }
+  downloadDocument(tailoredResumeText, '/generate/download-resume', 'tailored_resume.docx');
+});
+
+// document.getElementById('downloadBtn').addEventListener('click', async function () {
+//   const coverLetterText = document.getElementById('coverLetterOutput').value;
+
+//   try {
+//       const response = await fetch('/generate/download', {
+//           method: 'POST',
+//           headers: { 'Content-Type': 'application/json' },
+//           body: JSON.stringify({ coverLetterText })
+//       });
+
+//       if (!response.ok) throw new Error('Failed to download document.');
+
+//       // Convert response to blob
+//       const blob = await response.blob();
+//       const url = window.URL.createObjectURL(blob);
+
+//       // Create a temporary download link
+//       const a = document.createElement('a');
+//       a.href = url;
+//       a.download = 'cover_letter.docx';
+//       document.body.appendChild(a);
+//       a.click();
+
+//       // Cleanup
+//       document.body.removeChild(a);
+//       window.URL.revokeObjectURL(url);
+//   } catch (error) {
+//       console.error('Error:', error);
+//       alert('Failed to download document.');
+//   }
+// });
 
 
 function formatCoverLetter(rawText) {

@@ -95,39 +95,102 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.post('/download', async (req, res) => {
-  try {
-    const { coverLetterText } = req.body;
+// router.post('/download', async (req, res) => {
+//   try {
+//     const { coverLetterText } = req.body;
 
-    // Generate .docx file dynamically
-    const docBuffer = await generateCoverLetter(coverLetterText);
+//     // Generate .docx file dynamically
+//     const docBuffer = await generateCoverLetter(coverLetterText);
 
-    // Set response headers for file download
-    res.setHeader('Content-Disposition', 'attachment; filename="cover_letter.docx"');
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+//     // Set response headers for file download
+//     res.setHeader('Content-Disposition', 'attachment; filename="cover_letter.docx"');
+//     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
-    res.send(docBuffer);
+//     res.send(docBuffer);
     
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error generating document' });
-  }
-});
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Error generating document' });
+//   }
+// });
 
-function generateCoverLetter(rawText) {
+// function generateCoverLetter(rawText) {
+//   if (!rawText || typeof rawText !== "string") {
+//     throw new Error("Invalid cover letter text provided.");
+//   }
+
+//   // Convert text into paragraphs, splitting by double newlines
+//   const paragraphs = rawText.split("\n\n").map(text => 
+//     new Paragraph({
+//       children: [
+//         new TextRun(text),
+//         new TextRun("\n") // Ensures spacing between paragraphs
+//       ]
+//     })
+//   );
+
+//   // Create the document
+//   const doc = new Document({
+//     sections: [{ properties: {}, children: paragraphs }]
+//   });
+
+//   return Packer.toBuffer(doc);
+// }
+
+// Function to generate a DOCX file
+// function generateDocx(rawText) {
+//   if (!rawText || typeof rawText !== "string") {
+//       throw new Error("Invalid text provided.");
+//   }
+
+//   const paragraphs = rawText.split("\n\n").map(text => 
+//       new Paragraph({
+//           children: [
+//               new TextRun(text),
+//               new TextRun("\n") // Ensures spacing between paragraphs
+//           ]
+//       })
+//   );
+
+//   const doc = new Document({
+//       sections: [{ properties: {}, children: paragraphs }]
+//   });
+
+//   return Packer.toBuffer(doc);
+// }
+
+function generateDocx(rawText) {
   if (!rawText || typeof rawText !== "string") {
-    throw new Error("Invalid cover letter text provided.");
+    throw new Error("Invalid resume text provided.");
   }
 
-  // Convert text into paragraphs, splitting by double newlines
-  const paragraphs = rawText.split("\n\n").map(text => 
-    new Paragraph({
-      children: [
-        new TextRun(text),
-        new TextRun("\n") // Ensures spacing between paragraphs
-      ]
-    })
-  );
+  const paragraphs = [];
+  
+  // Split text into lines
+  rawText.split("\n").forEach(line => {
+    if (line.trim().startsWith("•")) {
+      // Format bullet points properly
+      paragraphs.push(
+        new Paragraph({
+          text: line.trim(), // Keep bullet point text
+          bullet: { level: 0 } // Apply bullet point formatting
+        })
+      );
+    } else if (line.trim() === "") {
+      // Add spacing for empty lines
+      paragraphs.push(new Paragraph({ text: "" }));
+    } else {
+      // Format normal text
+      paragraphs.push(
+        new Paragraph({
+          children: [
+            new TextRun(line.trim()),
+            new TextRun("\n")
+          ]
+        })
+      );
+    }
+  });
 
   // Create the document
   const doc = new Document({
@@ -137,6 +200,38 @@ function generateCoverLetter(rawText) {
   return Packer.toBuffer(doc);
 }
 
+
+// Route to download cover letter
+router.post('/download-cover-letter', async (req, res) => {
+  try {
+      const { content } = req.body;
+      const docBuffer = await generateDocx(content);
+
+      res.setHeader('Content-Disposition', 'attachment; filename="cover_letter.docx"');
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+      res.send(docBuffer);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error generating document' });
+  }
+});
+
+// Route to download tailored resume
+router.post('/download-resume', async (req, res) => {
+  try {
+      const { content } = req.body;
+      const docBuffer = await generateDocx(content);
+
+      res.setHeader('Content-Disposition', 'attachment; filename="tailored_resume.docx"');
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+      res.send(docBuffer);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error generating document' });
+  }
+});
 
 
 module.exports = router;
