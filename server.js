@@ -16,6 +16,10 @@ app.use(express.json());
 const generateRoute = require('./routes/generate');
 app.use('/generate', generateRoute);
 
+app.get('/env', (req,res) => {
+  res.json({TEST_MODE: process.env.TEST_MODE || false})
+})
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

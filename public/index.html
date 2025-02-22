@@ -46,6 +46,20 @@
 
   <script src="js/script.js"></script> <!-- External JS file -->
 
+  <script>
+    fetch('/env')
+      .then(response => response.json())
+      .then(data => {
+        if (data.TEST_MODE === 'true') {
+          const testScript = document.createElement("script");
+          testScript.src = "js/test.js";
+          document.body.appendChild(testScript);
+          console.log("🚀 Test mode enabled");
+        }
+      })
+      .catch(error => console.error("Error fetching environment variables:", error));
+  </script>
+
 
 </body>
 </html>
