@@ -4,6 +4,7 @@ const multer = require('multer');
 const pdf = require('pdf-parse');
 const { Document, Packer, Paragraph, TextRun } = require('docx');
 const Anthropic = require('@anthropic-ai/sdk');
+const mammoth = require('mammoth');
 
 // Load Environment Variables
 require('dotenv').config();
