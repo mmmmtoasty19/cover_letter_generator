@@ -49,13 +49,42 @@ router.post('/extract-resume', upload.single('resume'), async (req, res) => {
     const resumeResponse = await anthropic.messages.create(resume_parser_api);
     
     // Extract JSON-formatted profile from the response
-    const candidateProfile = resumeResponse.content[0].text.split('<json_output>')[1].split('</json_output>')[0].trim();
+    let candidateProfile;
+    const responseText = resumeResponse.content[0].text;
 
-    res.json({candidateProfile: JSON.parse(candidateProfile) });
+    // First, extract from XML tags if present
+    if (responseText.includes('<json_output>')) {
+      candidateProfile = responseText.split('<json_output>')[1].split('</json_output>')[0].trim();
+    } else {
+      candidateProfile = responseText.trim();
+    }
+
+    // Then, strip any markdown code blocks that might be wrapping the JSON
+    if (candidateProfile.includes('```json')) {
+      candidateProfile = candidateProfile.split('```json')[1].split('```')[0].trim();
+    } else if (candidateProfile.startsWith('```')) {
+      candidateProfile = candidateProfile.split('```')[1].split('```')[0].trim();
+    }
+
+    // Try to extract JSON object if still not clean
+    if (!candidateProfile.startsWith('{')) {
+      const jsonMatch = candidateProfile.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        candidateProfile = jsonMatch[0];
+      }
+    }
+
+    // Parse the JSON
+    const parsedProfile = JSON.parse(candidateProfile);
+    
+    res.json({candidateProfile: parsedProfile });
    
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error extracting resume text' });
+    console.error('Full error:', error);
+    if (error instanceof SyntaxError) {
+      console.error('JSON Parse Error - the extracted text was not valid JSON');
+    }
+    res.status(500).json({ error: 'Error extracting resume text', details: error.message });
   }
 });
 
@@ -95,70 +124,6 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Error generating cover letter' });
   }
 });
-
-// router.post('/download', async (req, res) => {
-//   try {
-//     const { coverLetterText } = req.body;
-
-//     // Generate .docx file dynamically
-//     const docBuffer = await generateCoverLetter(coverLetterText);
-
-//     // Set response headers for file download
-//     res.setHeader('Content-Disposition', 'attachment; filename="cover_letter.docx"');
-//     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-
-//     res.send(docBuffer);
-    
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Error generating document' });
-//   }
-// });
-
-// function generateCoverLetter(rawText) {
-//   if (!rawText || typeof rawText !== "string") {
-//     throw new Error("Invalid cover letter text provided.");
-//   }
-
-//   // Convert text into paragraphs, splitting by double newlines
-//   const paragraphs = rawText.split("\n\n").map(text => 
-//     new Paragraph({
-//       children: [
-//         new TextRun(text),
-//         new TextRun("\n") // Ensures spacing between paragraphs
-//       ]
-//     })
-//   );
-
-//   // Create the document
-//   const doc = new Document({
-//     sections: [{ properties: {}, children: paragraphs }]
-//   });
-
-//   return Packer.toBuffer(doc);
-// }
-
-// Function to generate a DOCX file
-// function generateDocx(rawText) {
-//   if (!rawText || typeof rawText !== "string") {
-//       throw new Error("Invalid text provided.");
-//   }
-
-//   const paragraphs = rawText.split("\n\n").map(text => 
-//       new Paragraph({
-//           children: [
-//               new TextRun(text),
-//               new TextRun("\n") // Ensures spacing between paragraphs
-//           ]
-//       })
-//   );
-
-//   const doc = new Document({
-//       sections: [{ properties: {}, children: paragraphs }]
-//   });
-
-//   return Packer.toBuffer(doc);
-// }
 
 function generateDocx(rawText) {
   if (!rawText || typeof rawText !== "string") {
