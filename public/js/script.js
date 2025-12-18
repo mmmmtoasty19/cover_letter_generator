@@ -1,5 +1,41 @@
 const profileJsonTextarea = document.getElementById("profileJson");
 
+// Handle "Use Saved Profile" button
+document.getElementById('useSavedProfileBtn').addEventListener('click', async function() {
+  const resumePreviewSection = document.getElementById('resumePreviewSection');
+  const generateBtn = document.getElementById('generateCoverLetterBtn');
+  const profileJson = document.getElementById('profileJson');
+  const quickStartSection = document.getElementById('quickStartSection');
+  const uploadForm = document.getElementById('uploadForm');
+
+  profileJson.textContent = "Loading saved profile...";
+  resumePreviewSection.style.display = "grid";
+
+  try {
+    const response = await fetch('/load-saved-profile');
+    const data = await response.json();
+    
+    if (data.error) {
+      alert('No saved profile found. Please upload a resume first.');
+      resumePreviewSection.style.display = "none";
+      return;
+    }
+
+    profileJson.value = JSON.stringify(data.candidateProfile, null, 2);
+    generateBtn.disabled = false;
+    
+    // Hide the upload options once profile is loaded
+    quickStartSection.style.display = "none";
+    uploadForm.style.display = "none";
+    
+  } catch (error) {
+    console.error('Error loading saved profile:', error);
+    alert('Failed to load saved profile. Please try uploading a resume.');
+    resumePreviewSection.style.display = "none";
+  }
+});
+
+
 // Function to validate JSON input live
 function validateJsonInput() {
   const errorText = document.getElementById("jsonError");
@@ -57,6 +93,9 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
   const data = await response.json();
   generateBtn.disabled = false;  
   profileJson.textContent = JSON.stringify(data.candidateProfile, null, 2);
+  document.getElementById('quickStartSection').style.display = "none";
+  document.getElementById('uploadForm').style.display = "none";
+
   } catch (error) {
     console.error('Error:', error);
     alert('Something went wrong. Please try again.');

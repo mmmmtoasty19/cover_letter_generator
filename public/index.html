@@ -11,6 +11,15 @@
 <body>
   <h1 class="text-2xl text-center">Generate Your Cover Letter</h1>
   <br>
+  <!-- Quick Start Option -->
+  <div id="quickStartSection">
+    <button type="button" id="useSavedProfileBtn" style="background: #4CAF50; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; font-weight: bold;">
+      Use Saved Profile (Skip Resume Upload)
+    </button>
+    <p style="text-align: center; margin: 10px 0; color: #666;">— OR —</p>
+  </div>
+  <!-- End Quick Start  -->
+   
   <form id="uploadForm" enctype="multipart/form-data">
       <label for="resume">Upload Resume (pdf or docx):</label>
       <input type="file" id="resume" name="resume" accept=".pdf,.docx,.doc" required><br><br>
