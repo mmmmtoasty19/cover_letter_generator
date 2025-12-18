@@ -1,0 +1,121 @@
+{
+  "first_name": "Kyle",
+  "last_name": "Belanger",
+  "location": "North Carolina",
+  "email": "wkbelanger@gmail.com",
+  "phone_number": "(910)549-7931",
+  "work_experience": [
+    {
+      "company": "Roche Diagnostics",
+      "position": "IT Workflow Consultant",
+      "duration": "2021 - Present",
+      "responsibilities": [
+        "Collaboratively design highly complex workflows to maximize the RDC solution for customers",
+        "Gather customer requirements in the sales phases and implementation phases with structured handoffs to IT implementation teams",
+        "Provide complex technical recommendations to customers on operational aspects of their Laboratory and IT solutions as it relates to post-live optimization"
+      ],
+      "achievements": [
+        "Created several Shiny Applications to assist teammates in automated workflows"
+      ]
+    },
+    {
+      "company": "Roche Diagnostics",
+      "position": "Field Application Specialist",
+      "duration": "2012 - 2021",
+      "responsibilities": [
+        "Train customers in new technology",
+        "Analyze instrument validation data",
+        "Analyze validation data of new and updated assays",
+        "Support current customers with troubleshooting needs"
+      ],
+      "achievements": []
+    },
+    {
+      "company": "Cape Fear Valley Medical Center",
+      "position": "Lead Medical Technologist",
+      "duration": "2011 - 2012",
+      "responsibilities": [
+        "Managed a small team of technologist",
+        "Performed new assay validations",
+        "Assisted with new Laboratory Information System design"
+      ],
+      "achievements": []
+    },
+    {
+      "company": "Cape Fear Valley Medical Center",
+      "position": "Medical Technologist",
+      "duration": "2009 - 2011",
+      "responsibilities": [
+        "Ensured test-result validity before recording/reporting results",
+        "Evaluated quality control within laboratory using standard laboratory test and measurement controls",
+        "Maintained compliance with CLIA, OSHA, safety and risk-management guidelines"
+      ],
+      "achievements": [
+        "Earned a reputation for attention to detail"
+      ]
+    }
+  ],
+  "school_experience": [
+    {
+      "institution": "Campbell University",
+      "degree": "Doctor of Health Sciences",
+      "field_of_study": "Health Sciences",
+      "graduation_year": 2023,
+      "achievements": [
+        "Capstone: Reflex Testing using Machine learning in the Clinical Laboratory"
+      ]
+    },
+    {
+      "institution": "University of Central Florida",
+      "degree": "Master of Science",
+      "field_of_study": "Healthcare Informatics",
+      "graduation_year": 2020,
+      "achievements": []
+    },
+    {
+      "institution": "Western Carolina University",
+      "degree": "Bachelor of Science",
+      "field_of_study": "Clinical Laboratory Science",
+      "graduation_year": 2009,
+      "achievements": []
+    }
+  ],
+  "skills": {
+    "technical": [
+      "R",
+      "Tableau",
+      "Alteryx",
+      "Microsoft Office",
+      "SQL",
+      "Python",
+      "R Shiny App Development",
+      "Machine Learning"
+    ],
+    "soft": [
+      "Attention to detail",
+      "Customer training",
+      "Team management",
+      "Cross-functional collaboration",
+      "Technical communication"
+    ],
+    "domain_specific": [
+      "Healthcare Informatics",
+      "Clinical Laboratory Science",
+      "Laboratory Information Systems",
+      "Quality Control Compliance",
+      "CLIA Regulations",
+      "OSHA Compliance",
+      "Medical Data Analysis",
+      "Instrument Validation",
+      "Assay Validation"
+    ]
+  },
+  "unique_selling_points": [
+    "14-year track record in the medical industry",
+    "Ability to bridge the gap between medical professionals and information technologists",
+    "Doctoral degree with machine learning capstone project in clinical laboratory setting",
+    "Proficient in applying machine learning techniques to enhance medical data analysis",
+    "Experienced in developing R Shiny applications for healthcare workflow automation",
+    "Progressive career growth from Medical Technologist to IT Workflow Consultant"
+  ]
+}
